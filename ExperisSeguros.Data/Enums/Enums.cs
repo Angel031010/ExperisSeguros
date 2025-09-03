@@ -10,7 +10,7 @@ namespace ExperisSeguros.Data.Enums
         Mujer
     }
 
-    public enum PolicyStatus
+    public enum EstadoPoliza
     {
         Cotizada,
         Autorizada,

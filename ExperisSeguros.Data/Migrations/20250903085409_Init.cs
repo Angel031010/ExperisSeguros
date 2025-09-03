@@ -22,29 +22,31 @@ namespace ExperisSeguros.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Countries",
+                name: "Paises",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(nullable: true)
+                    Codigo = table.Column<string>(maxLength: 3, nullable: false),
+                    Nombre = table.Column<string>(maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Countries", x => x.Id);
+                    table.PrimaryKey("PK_Paises", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "PolicyTypes",
+                name: "TiposPoliza",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(nullable: true)
+                    Nombre = table.Column<string>(maxLength: 50, nullable: false),
+                    Descripcion = table.Column<string>(maxLength: 200, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PolicyTypes", x => x.Id);
+                    table.PrimaryKey("PK_TiposPoliza", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -87,23 +89,22 @@ namespace ExperisSeguros.Data.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
-                    Nombre = table.Column<string>(nullable: true),
-                    ApellidoPaterno = table.Column<string>(nullable: true),
-                    ApellidoMaterno = table.Column<string>(nullable: true),
-                    Edad = table.Column<int>(nullable: false),
+                    Nombre = table.Column<string>(maxLength: 100, nullable: false),
+                    ApellidoPaterno = table.Column<string>(maxLength: 100, nullable: false),
+                    ApellidoMaterno = table.Column<string>(maxLength: 100, nullable: true),
+                    FechaNacimiento = table.Column<DateTime>(nullable: false),
                     Genero = table.Column<int>(nullable: false),
-                    Role = table.Column<string>(nullable: true),
-                    CountryId = table.Column<int>(nullable: true)
+                    PaisId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Countries_CountryId",
-                        column: x => x.CountryId,
-                        principalTable: "Countries",
+                        name: "FK_AspNetUsers_Paises_PaisId",
+                        column: x => x.PaisId,
+                        principalTable: "Paises",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -192,82 +193,102 @@ namespace ExperisSeguros.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Policies",
+                name: "Polizas",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NumeroPoliza = table.Column<string>(maxLength: 50, nullable: false),
-                    PolicyTypeId = table.Column<int>(nullable: false),
-                    ClientId = table.Column<string>(nullable: true),
                     FechaInicio = table.Column<DateTime>(nullable: false),
                     FechaFin = table.Column<DateTime>(nullable: false),
-                    MontoPrima = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<int>(nullable: false),
-                    BrokerId = table.Column<string>(nullable: true)
+                    MontoPrima = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Estado = table.Column<int>(nullable: false, defaultValue: 0),
+                    FechaCreacion = table.Column<DateTime>(nullable: false, defaultValueSql: "GETDATE()"),
+                    ClienteId = table.Column<string>(nullable: false),
+                    TipoPolizaId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Policies", x => x.Id);
+                    table.PrimaryKey("PK_Polizas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Policies_AspNetUsers_BrokerId",
-                        column: x => x.BrokerId,
+                        name: "FK_Polizas_AspNetUsers_ClienteId",
+                        column: x => x.ClienteId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Policies_AspNetUsers_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Policies_PolicyTypes_PolicyTypeId",
-                        column: x => x.PolicyTypeId,
-                        principalTable: "PolicyTypes",
+                        name: "FK_Polizas_TiposPoliza_TipoPolizaId",
+                        column: x => x.TipoPolizaId,
+                        principalTable: "TiposPoliza",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "Countries",
-                columns: new[] { "Id", "Nombre" },
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "México" },
-                    { 22, "Puerto Rico" },
-                    { 21, "Cuba" },
-                    { 20, "Nicaragua" },
-                    { 19, "El Salvador" },
-                    { 18, "Honduras" },
-                    { 17, "República Dominicana" },
-                    { 16, "Panamá" },
-                    { 15, "Costa Rica" },
-                    { 14, "Guatemala" },
-                    { 12, "Paraguay" },
-                    { 13, "Uruguay" },
-                    { 10, "Ecuador" },
-                    { 9, "Venezuela" },
-                    { 8, "Perú" },
-                    { 7, "Colombia" },
-                    { 6, "Chile" },
-                    { 5, "Brasil" },
-                    { 4, "Argentina" },
-                    { 3, "Canadá" },
-                    { 2, "Estados Unidos" },
-                    { 11, "Bolivia" }
+                    { "a18be9c0-aa65-4af8-bd17-00bd9344e575", "a18be9c0-aa65-4af8-bd17-00bd9344e575", "Admin", "ADMIN" },
+                    { "b18be9c0-aa65-4af8-bd17-00bd9344e576", "b18be9c0-aa65-4af8-bd17-00bd9344e576", "Broker", "BROKER" },
+                    { "c18be9c0-aa65-4af8-bd17-00bd9344e577", "c18be9c0-aa65-4af8-bd17-00bd9344e577", "Cliente", "CLIENTE" }
                 });
 
             migrationBuilder.InsertData(
-                table: "PolicyTypes",
-                columns: new[] { "Id", "Nombre" },
+                table: "Paises",
+                columns: new[] { "Id", "Codigo", "Nombre" },
                 values: new object[,]
                 {
-                    { 3, "Hogar" },
-                    { 1, "Vida" },
-                    { 2, "Auto" },
-                    { 4, "Salud" }
+                    { 1, "MX", "México" },
+                    { 2, "US", "Estados Unidos" },
+                    { 3, "CA", "Canadá" },
+                    { 4, "AR", "Argentina" },
+                    { 5, "BR", "Brasil" },
+                    { 6, "CL", "Chile" },
+                    { 7, "CO", "Colombia" },
+                    { 8, "PE", "Perú" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "TiposPoliza",
+                columns: new[] { "Id", "Descripcion", "Nombre" },
+                values: new object[,]
+                {
+                    { 1, "Seguro de vida", "Vida" },
+                    { 2, "Seguro automotriz", "Auto" },
+                    { 3, "Seguro de hogar", "Hogar" },
+                    { 4, "Seguro de salud", "Salud" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ApellidoMaterno", "ApellidoPaterno", "ConcurrencyStamp", "Email", "EmailConfirmed", "FechaNacimiento", "Genero", "LockoutEnabled", "LockoutEnd", "Nombre", "NormalizedEmail", "NormalizedUserName", "PaisId", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "a18be9c0-aa65-4af8-bd17-00bd9344e578", 0, "Torres", "Ramírez", "bf411354-c8e5-466c-9223-e078ad0112a1", "carlos.ramirez@experis.com", true, new DateTime(1985, 9, 3, 0, 0, 0, 0, DateTimeKind.Local), 0, false, null, "Carlos", "CARLOS.RAMIREZ@EXPERIS.COM", "CARLOS.RAMIREZ@EXPERIS.COM", 1, "AQAAAAEAACcQAAAAEKaIfvkj3Ev8xualACxKZ5NpBY6gyzv8irI4rqGjB2JxYT86ZPocbMYUp4I5IH0HOA==", "+5215512345670", true, "a04c2a69-9b0d-4d3a-b80a-c017f0072168", false, "carlos.ramirez@experis.com" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ApellidoMaterno", "ApellidoPaterno", "ConcurrencyStamp", "Email", "EmailConfirmed", "FechaNacimiento", "Genero", "LockoutEnabled", "LockoutEnd", "Nombre", "NormalizedEmail", "NormalizedUserName", "PaisId", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "b18be9c0-aa65-4af8-bd17-00bd9344e579", 0, "Hernández", "Mendoza", "bc18ba8b-20a0-4576-b467-31751cf7aa94", "andrea.mendoza@experis.com", true, new DateTime(1992, 9, 3, 0, 0, 0, 0, DateTimeKind.Local), 1, false, null, "Andrea", "ANDREA.MENDOZA@EXPERIS.COM", "ANDREA.MENDOZA@EXPERIS.COM", 1, "AQAAAAEAACcQAAAAEB3HY7Ll8AKcU6LbvlEPt/C+sP8q9/sGasbYCjefITZ8MSLJV9yICAwRPX/cRdZO+g==", "+5215512345671", true, "d77ceab9-8148-4dac-a365-613cd4fe9238", false, "andrea.mendoza@experis.com" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ApellidoMaterno", "ApellidoPaterno", "ConcurrencyStamp", "Email", "EmailConfirmed", "FechaNacimiento", "Genero", "LockoutEnabled", "LockoutEnd", "Nombre", "NormalizedEmail", "NormalizedUserName", "PaisId", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "c18be9c0-aa65-4af8-bd17-00bd9344e580", 0, "García", "López", "86d82f78-1f38-4696-a769-8b25dd4fc999", "fernando.lopez@gmail.com", true, new DateTime(1998, 9, 3, 0, 0, 0, 0, DateTimeKind.Local), 0, false, null, "Fernando", "FERNANDO.LOPEZ@GMAIL.COM", "FERNANDO.LOPEZ@GMAIL.COM", 1, "AQAAAAEAACcQAAAAEGd9YLnr8IOOF/q2TSngVvbZg5ApyvTjUApPr8dMN0ypnoX6xSK7Sk4RfP38JzKx6Q==", "+5215512345672", true, "fbab6548-ce4c-40fa-a752-cb0d9c29a82f", false, "fernando.lopez@gmail.com" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "UserId", "RoleId" },
+                values: new object[] { "a18be9c0-aa65-4af8-bd17-00bd9344e578", "a18be9c0-aa65-4af8-bd17-00bd9344e575" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "UserId", "RoleId" },
+                values: new object[] { "b18be9c0-aa65-4af8-bd17-00bd9344e579", "b18be9c0-aa65-4af8-bd17-00bd9344e576" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "UserId", "RoleId" },
+                values: new object[] { "c18be9c0-aa65-4af8-bd17-00bd9344e580", "c18be9c0-aa65-4af8-bd17-00bd9344e577" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -297,11 +318,6 @@ namespace ExperisSeguros.Data.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_CountryId",
-                table: "AspNetUsers",
-                column: "CountryId");
-
-            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
@@ -314,25 +330,25 @@ namespace ExperisSeguros.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Policies_BrokerId",
-                table: "Policies",
-                column: "BrokerId");
+                name: "IX_AspNetUsers_PaisId",
+                table: "AspNetUsers",
+                column: "PaisId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Policies_ClientId",
-                table: "Policies",
-                column: "ClientId");
+                name: "IX_Polizas_ClienteId",
+                table: "Polizas",
+                column: "ClienteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Policies_NumeroPoliza",
-                table: "Policies",
+                name: "IX_Polizas_NumeroPoliza",
+                table: "Polizas",
                 column: "NumeroPoliza",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Policies_PolicyTypeId",
-                table: "Policies",
-                column: "PolicyTypeId");
+                name: "IX_Polizas_TipoPolizaId",
+                table: "Polizas",
+                column: "TipoPolizaId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -353,7 +369,7 @@ namespace ExperisSeguros.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Policies");
+                name: "Polizas");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -362,10 +378,10 @@ namespace ExperisSeguros.Data.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "PolicyTypes");
+                name: "TiposPoliza");
 
             migrationBuilder.DropTable(
-                name: "Countries");
+                name: "Paises");
         }
     }
 }

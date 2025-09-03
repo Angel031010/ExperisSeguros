@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExperisSeguros.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250901191155_Init")]
+    [Migration("20250903085409_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,20 +30,17 @@ namespace ExperisSeguros.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ApellidoMaterno")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<string>("ApellidoPaterno")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Edad")
-                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
@@ -51,6 +48,9 @@ namespace ExperisSeguros.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("FechaNacimiento")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Genero")
                         .HasColumnType("int");
@@ -62,7 +62,9 @@ namespace ExperisSeguros.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("nvarchar(256)")
@@ -72,6 +74,9 @@ namespace ExperisSeguros.Data.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
+                    b.Property<int>("PaisId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -80,9 +85,6 @@ namespace ExperisSeguros.Data.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -96,8 +98,6 @@ namespace ExperisSeguros.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountryId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
@@ -106,148 +106,174 @@ namespace ExperisSeguros.Data.Migrations
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("PaisId");
+
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "a18be9c0-aa65-4af8-bd17-00bd9344e578",
+                            AccessFailedCount = 0,
+                            ApellidoMaterno = "Torres",
+                            ApellidoPaterno = "Ramírez",
+                            ConcurrencyStamp = "bf411354-c8e5-466c-9223-e078ad0112a1",
+                            Email = "carlos.ramirez@experis.com",
+                            EmailConfirmed = true,
+                            FechaNacimiento = new DateTime(1985, 9, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Genero = 0,
+                            LockoutEnabled = false,
+                            Nombre = "Carlos",
+                            NormalizedEmail = "CARLOS.RAMIREZ@EXPERIS.COM",
+                            NormalizedUserName = "CARLOS.RAMIREZ@EXPERIS.COM",
+                            PaisId = 1,
+                            PasswordHash = "AQAAAAEAACcQAAAAEKaIfvkj3Ev8xualACxKZ5NpBY6gyzv8irI4rqGjB2JxYT86ZPocbMYUp4I5IH0HOA==",
+                            PhoneNumber = "+5215512345670",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "a04c2a69-9b0d-4d3a-b80a-c017f0072168",
+                            TwoFactorEnabled = false,
+                            UserName = "carlos.ramirez@experis.com"
+                        },
+                        new
+                        {
+                            Id = "b18be9c0-aa65-4af8-bd17-00bd9344e579",
+                            AccessFailedCount = 0,
+                            ApellidoMaterno = "Hernández",
+                            ApellidoPaterno = "Mendoza",
+                            ConcurrencyStamp = "bc18ba8b-20a0-4576-b467-31751cf7aa94",
+                            Email = "andrea.mendoza@experis.com",
+                            EmailConfirmed = true,
+                            FechaNacimiento = new DateTime(1992, 9, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Genero = 1,
+                            LockoutEnabled = false,
+                            Nombre = "Andrea",
+                            NormalizedEmail = "ANDREA.MENDOZA@EXPERIS.COM",
+                            NormalizedUserName = "ANDREA.MENDOZA@EXPERIS.COM",
+                            PaisId = 1,
+                            PasswordHash = "AQAAAAEAACcQAAAAEB3HY7Ll8AKcU6LbvlEPt/C+sP8q9/sGasbYCjefITZ8MSLJV9yICAwRPX/cRdZO+g==",
+                            PhoneNumber = "+5215512345671",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "d77ceab9-8148-4dac-a365-613cd4fe9238",
+                            TwoFactorEnabled = false,
+                            UserName = "andrea.mendoza@experis.com"
+                        },
+                        new
+                        {
+                            Id = "c18be9c0-aa65-4af8-bd17-00bd9344e580",
+                            AccessFailedCount = 0,
+                            ApellidoMaterno = "García",
+                            ApellidoPaterno = "López",
+                            ConcurrencyStamp = "86d82f78-1f38-4696-a769-8b25dd4fc999",
+                            Email = "fernando.lopez@gmail.com",
+                            EmailConfirmed = true,
+                            FechaNacimiento = new DateTime(1998, 9, 3, 0, 0, 0, 0, DateTimeKind.Local),
+                            Genero = 0,
+                            LockoutEnabled = false,
+                            Nombre = "Fernando",
+                            NormalizedEmail = "FERNANDO.LOPEZ@GMAIL.COM",
+                            NormalizedUserName = "FERNANDO.LOPEZ@GMAIL.COM",
+                            PaisId = 1,
+                            PasswordHash = "AQAAAAEAACcQAAAAEGd9YLnr8IOOF/q2TSngVvbZg5ApyvTjUApPr8dMN0ypnoX6xSK7Sk4RfP38JzKx6Q==",
+                            PhoneNumber = "+5215512345672",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "fbab6548-ce4c-40fa-a752-cb0d9c29a82f",
+                            TwoFactorEnabled = false,
+                            UserName = "fernando.lopez@gmail.com"
+                        });
                 });
 
-            modelBuilder.Entity("ExperisSeguros.Data.Models.Country", b =>
+            modelBuilder.Entity("ExperisSeguros.Data.Models.Pais", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(3)")
+                        .HasMaxLength(3);
+
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.HasKey("Id");
 
-                    b.ToTable("Countries");
+                    b.ToTable("Paises");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
+                            Codigo = "MX",
                             Nombre = "México"
                         },
                         new
                         {
                             Id = 2,
+                            Codigo = "US",
                             Nombre = "Estados Unidos"
                         },
                         new
                         {
                             Id = 3,
+                            Codigo = "CA",
                             Nombre = "Canadá"
                         },
                         new
                         {
                             Id = 4,
+                            Codigo = "AR",
                             Nombre = "Argentina"
                         },
                         new
                         {
                             Id = 5,
+                            Codigo = "BR",
                             Nombre = "Brasil"
                         },
                         new
                         {
                             Id = 6,
+                            Codigo = "CL",
                             Nombre = "Chile"
                         },
                         new
                         {
                             Id = 7,
+                            Codigo = "CO",
                             Nombre = "Colombia"
                         },
                         new
                         {
                             Id = 8,
+                            Codigo = "PE",
                             Nombre = "Perú"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Nombre = "Venezuela"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Nombre = "Ecuador"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Nombre = "Bolivia"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Nombre = "Paraguay"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Nombre = "Uruguay"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Nombre = "Guatemala"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Nombre = "Costa Rica"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Nombre = "Panamá"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Nombre = "República Dominicana"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Nombre = "Honduras"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Nombre = "El Salvador"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Nombre = "Nicaragua"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Nombre = "Cuba"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Nombre = "Puerto Rico"
                         });
                 });
 
-            modelBuilder.Entity("ExperisSeguros.Data.Models.Policy", b =>
+            modelBuilder.Entity("ExperisSeguros.Data.Models.Poliza", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("BrokerId")
+                    b.Property<string>("ClienteId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Estado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTime>("FechaFin")
                         .HasColumnType("datetime2");
@@ -256,66 +282,71 @@ namespace ExperisSeguros.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("MontoPrima")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("NumeroPoliza")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<int>("PolicyTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
+                    b.Property<int>("TipoPolizaId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BrokerId");
-
-                    b.HasIndex("ClientId");
+                    b.HasIndex("ClienteId");
 
                     b.HasIndex("NumeroPoliza")
                         .IsUnique();
 
-                    b.HasIndex("PolicyTypeId");
+                    b.HasIndex("TipoPolizaId");
 
-                    b.ToTable("Policies");
+                    b.ToTable("Polizas");
                 });
 
-            modelBuilder.Entity("ExperisSeguros.Data.Models.PolicyType", b =>
+            modelBuilder.Entity("ExperisSeguros.Data.Models.TipoPoliza", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
+
                     b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
-                    b.ToTable("PolicyTypes");
+                    b.ToTable("TiposPoliza");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
+                            Descripcion = "Seguro de vida",
                             Nombre = "Vida"
                         },
                         new
                         {
                             Id = 2,
+                            Descripcion = "Seguro automotriz",
                             Nombre = "Auto"
                         },
                         new
                         {
                             Id = 3,
+                            Descripcion = "Seguro de hogar",
                             Nombre = "Hogar"
                         },
                         new
                         {
                             Id = 4,
+                            Descripcion = "Seguro de salud",
                             Nombre = "Salud"
                         });
                 });
@@ -345,6 +376,29 @@ namespace ExperisSeguros.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "a18be9c0-aa65-4af8-bd17-00bd9344e575",
+                            ConcurrencyStamp = "a18be9c0-aa65-4af8-bd17-00bd9344e575",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "b18be9c0-aa65-4af8-bd17-00bd9344e576",
+                            ConcurrencyStamp = "b18be9c0-aa65-4af8-bd17-00bd9344e576",
+                            Name = "Broker",
+                            NormalizedName = "BROKER"
+                        },
+                        new
+                        {
+                            Id = "c18be9c0-aa65-4af8-bd17-00bd9344e577",
+                            ConcurrencyStamp = "c18be9c0-aa65-4af8-bd17-00bd9344e577",
+                            Name = "Cliente",
+                            NormalizedName = "CLIENTE"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -432,6 +486,23 @@ namespace ExperisSeguros.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "a18be9c0-aa65-4af8-bd17-00bd9344e578",
+                            RoleId = "a18be9c0-aa65-4af8-bd17-00bd9344e575"
+                        },
+                        new
+                        {
+                            UserId = "b18be9c0-aa65-4af8-bd17-00bd9344e579",
+                            RoleId = "b18be9c0-aa65-4af8-bd17-00bd9344e576"
+                        },
+                        new
+                        {
+                            UserId = "c18be9c0-aa65-4af8-bd17-00bd9344e580",
+                            RoleId = "c18be9c0-aa65-4af8-bd17-00bd9344e577"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -457,26 +528,24 @@ namespace ExperisSeguros.Data.Migrations
 
             modelBuilder.Entity("ExperisSeguros.Data.Models.ApplicationUser", b =>
                 {
-                    b.HasOne("ExperisSeguros.Data.Models.Country", null)
-                        .WithMany("Users")
-                        .HasForeignKey("CountryId");
+                    b.HasOne("ExperisSeguros.Data.Models.Pais", "Pais")
+                        .WithMany("Usuarios")
+                        .HasForeignKey("PaisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("ExperisSeguros.Data.Models.Policy", b =>
+            modelBuilder.Entity("ExperisSeguros.Data.Models.Poliza", b =>
                 {
-                    b.HasOne("ExperisSeguros.Data.Models.ApplicationUser", "Broker")
-                        .WithMany()
-                        .HasForeignKey("BrokerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("ExperisSeguros.Data.Models.ApplicationUser", "Cliente")
+                        .WithMany("PolizasComoCliente")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("ExperisSeguros.Data.Models.ApplicationUser", "Client")
-                        .WithMany("Policies")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ExperisSeguros.Data.Models.PolicyType", "PolicyType")
-                        .WithMany("Policies")
-                        .HasForeignKey("PolicyTypeId")
+                    b.HasOne("ExperisSeguros.Data.Models.TipoPoliza", "TipoPoliza")
+                        .WithMany("Polizas")
+                        .HasForeignKey("TipoPolizaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

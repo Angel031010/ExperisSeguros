@@ -1,6 +1,9 @@
-﻿using ExperisSeguros.Data.Models;
+﻿using ExperisSeguros.Data.Enums;
+using ExperisSeguros.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace ExperisSeguros.Data
 {
@@ -11,61 +14,181 @@ namespace ExperisSeguros.Data
         {
         }
 
-        public DbSet<Policy> Policies { get; set; }
-        public DbSet<Country> Countries { get; set; }
-        public DbSet<PolicyType> PolicyTypes { get; set; }
+        public DbSet<Poliza> Polizas { get; set; }
+        public DbSet<TipoPoliza> TiposPoliza { get; set; }
+        public DbSet<Pais> Paises { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Policy>()
+            // Configurar índice único para NumeroPoliza
+            builder.Entity<Poliza>()
                 .HasIndex(p => p.NumeroPoliza)
                 .IsUnique();
 
-            builder.Entity<Policy>()
-                .HasOne(p => p.Client)
-                .WithMany(u => u.Policies)
-                .HasForeignKey(p => p.ClientId)
+            // Relación Poliza con Cliente
+            builder.Entity<Poliza>()
+                .HasOne(p => p.Cliente)
+                .WithMany(u => u.PolizasComoCliente)
+                .HasForeignKey(p => p.ClienteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Policy>()
-                .HasOne(p => p.Broker)
-                .WithMany()
-                .HasForeignKey(p => p.BrokerId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Valores por defecto
+            builder.Entity<Poliza>()
+                .Property(p => p.Estado)
+                .HasDefaultValue(EstadoPoliza.Cotizada);
 
-            builder.Entity<PolicyType>().HasData(
-                new PolicyType { Id = 1, Nombre = "Vida" },
-                new PolicyType { Id = 2, Nombre = "Auto" },
-                new PolicyType { Id = 3, Nombre = "Hogar" },
-                new PolicyType { Id = 4, Nombre = "Salud" }
+            builder.Entity<Poliza>()
+                .Property(p => p.FechaCreacion)
+                .HasDefaultValueSql("GETDATE()");
+
+            builder.Entity<Pais>().HasData(
+                new Pais { Id = 1, Codigo = "MX", Nombre = "México" },
+                new Pais { Id = 2, Codigo = "US", Nombre = "Estados Unidos" },
+                new Pais { Id = 3, Codigo = "CA", Nombre = "Canadá" },
+                new Pais { Id = 4, Codigo = "AR", Nombre = "Argentina" },
+                new Pais { Id = 5, Codigo = "BR", Nombre = "Brasil" },
+                new Pais { Id = 6, Codigo = "CL", Nombre = "Chile" },
+                new Pais { Id = 7, Codigo = "CO", Nombre = "Colombia" },
+                new Pais { Id = 8, Codigo = "PE", Nombre = "Perú" }
             );
 
-            builder.Entity<Country>().HasData(
-                new Country { Id = 1, Nombre = "México" },
-                new Country { Id = 2, Nombre = "Estados Unidos" },
-                new Country { Id = 3, Nombre = "Canadá" },
-                new Country { Id = 4, Nombre = "Argentina" },
-                new Country { Id = 5, Nombre = "Brasil" },
-                new Country { Id = 6, Nombre = "Chile" },
-                new Country { Id = 7, Nombre = "Colombia" },
-                new Country { Id = 8, Nombre = "Perú" },
-                new Country { Id = 9, Nombre = "Venezuela" },
-                new Country { Id = 10, Nombre = "Ecuador" },
-                new Country { Id = 11, Nombre = "Bolivia" },
-                new Country { Id = 12, Nombre = "Paraguay" },
-                new Country { Id = 13, Nombre = "Uruguay" },
-                new Country { Id = 14, Nombre = "Guatemala" },
-                new Country { Id = 15, Nombre = "Costa Rica" },
-                new Country { Id = 16, Nombre = "Panamá" },
-                new Country { Id = 17, Nombre = "República Dominicana" },
-                new Country { Id = 18, Nombre = "Honduras" },
-                new Country { Id = 19, Nombre = "El Salvador" },
-                new Country { Id = 20, Nombre = "Nicaragua" },
-                new Country { Id = 21, Nombre = "Cuba" },
-                new Country { Id = 22, Nombre = "Puerto Rico" }
+            // Tipos de Póliza
+            builder.Entity<TipoPoliza>().HasData(
+                new TipoPoliza { Id = 1, Nombre = "Vida", Descripcion = "Seguro de vida" },
+                new TipoPoliza { Id = 2, Nombre = "Auto", Descripcion = "Seguro automotriz" },
+                new TipoPoliza { Id = 3, Nombre = "Hogar", Descripcion = "Seguro de hogar" },
+                new TipoPoliza { Id = 4, Nombre = "Salud", Descripcion = "Seguro de salud" }
             );
+
+            #region Usuarios y Roles
+
+            // IDs para roles
+            var adminRoleId = "a18be9c0-aa65-4af8-bd17-00bd9344e575";
+            var brokerRoleId = "b18be9c0-aa65-4af8-bd17-00bd9344e576";
+            var clienteRoleId = "c18be9c0-aa65-4af8-bd17-00bd9344e577";
+
+            // IDs para usuarios
+            var adminUserId = "a18be9c0-aa65-4af8-bd17-00bd9344e578";
+            var brokerUserId = "b18be9c0-aa65-4af8-bd17-00bd9344e579";
+            var clienteUserId = "c18be9c0-aa65-4af8-bd17-00bd9344e580";
+
+            var hasher = new PasswordHasher<ApplicationUser>();
+
+            // Crear roles
+            builder.Entity<IdentityRole>().HasData(
+                new IdentityRole
+                {
+                    Id = adminRoleId,
+                    Name = "Admin",
+                    NormalizedName = "ADMIN",
+                    ConcurrencyStamp = adminRoleId
+                },
+                new IdentityRole
+                {
+                    Id = brokerRoleId,
+                    Name = "Broker",
+                    NormalizedName = "BROKER",
+                    ConcurrencyStamp = brokerRoleId
+                },
+                new IdentityRole
+                {
+                    Id = clienteRoleId,
+                    Name = "Cliente",
+                    NormalizedName = "CLIENTE",
+                    ConcurrencyStamp = clienteRoleId
+                }
+            );
+
+            builder.Entity<ApplicationUser>().HasData(
+                // Admin
+                new ApplicationUser
+                {
+                    Id = adminUserId,
+                    UserName = "carlos.ramirez@experis.com",
+                    NormalizedUserName = "CARLOS.RAMIREZ@EXPERIS.COM",
+                    Email = "carlos.ramirez@experis.com",
+                    NormalizedEmail = "CARLOS.RAMIREZ@EXPERIS.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = hasher.HashPassword(null, "Admin123!"),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString(),
+                    Nombre = "Carlos",
+                    ApellidoPaterno = "Ramírez",
+                    ApellidoMaterno = "Torres",
+                    FechaNacimiento = DateTime.Today.AddYears(-40),
+                    Genero = Genero.Hombre,
+                    PaisId = 1,
+                    PhoneNumber = "+5215512345670",
+                    PhoneNumberConfirmed = true
+                },
+
+                // Broker
+                new ApplicationUser
+                {
+                    Id = brokerUserId,
+                    UserName = "andrea.mendoza@experis.com",
+                    NormalizedUserName = "ANDREA.MENDOZA@EXPERIS.COM",
+                    Email = "andrea.mendoza@experis.com",
+                    NormalizedEmail = "ANDREA.MENDOZA@EXPERIS.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = hasher.HashPassword(null, "Broker123!"),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString(),
+                    Nombre = "Andrea",
+                    ApellidoPaterno = "Mendoza",
+                    ApellidoMaterno = "Hernández",
+                    FechaNacimiento = DateTime.Today.AddYears(-33),
+                    Genero = Genero.Mujer,
+                    PaisId = 1, 
+                    PhoneNumber = "+5215512345671",
+                    PhoneNumberConfirmed = true
+                },
+
+                // Cliente
+                new ApplicationUser
+                {
+                    Id = clienteUserId,
+                    UserName = "fernando.lopez@gmail.com",
+                    NormalizedUserName = "FERNANDO.LOPEZ@GMAIL.COM",
+                    Email = "fernando.lopez@gmail.com",
+                    NormalizedEmail = "FERNANDO.LOPEZ@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = hasher.HashPassword(null, "Cliente123!"),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString(),
+                    Nombre = "Fernando",
+                    ApellidoPaterno = "López",
+                    ApellidoMaterno = "García",
+                    FechaNacimiento = DateTime.Today.AddYears(-27),
+                    Genero = Genero.Hombre,
+                    PaisId = 1,
+                    PhoneNumber = "+5215512345672",
+                    PhoneNumberConfirmed = true
+                }
+            );
+
+            // Asignar roles a usuarios
+            builder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    RoleId = adminRoleId,
+                    UserId = adminUserId
+                },
+                new IdentityUserRole<string>
+                {
+                    RoleId = brokerRoleId,
+                    UserId = brokerUserId
+                },
+                new IdentityUserRole<string>
+                {
+                    RoleId = clienteRoleId,
+                    UserId = clienteUserId
+                }
+            );
+
+            #endregion
         }
     }
 }
