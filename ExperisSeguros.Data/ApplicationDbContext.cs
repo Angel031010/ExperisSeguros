@@ -73,6 +73,8 @@ namespace ExperisSeguros.Data
             var adminUserId = "a18be9c0-aa65-4af8-bd17-00bd9344e578";
             var brokerUserId = "b18be9c0-aa65-4af8-bd17-00bd9344e579";
             var clienteUserId = "c18be9c0-aa65-4af8-bd17-00bd9344e580";
+            var cliente2UserId = "c28be9c0-aa65-4af8-bd17-00bd9344e581";
+            var cliente3UserId = "c38be9c0-aa65-4af8-bd17-00bd9344e582";
 
             var hasher = new PasswordHasher<ApplicationUser>();
 
@@ -166,6 +168,48 @@ namespace ExperisSeguros.Data
                     PaisId = 1,
                     PhoneNumber = "+5215512345672",
                     PhoneNumberConfirmed = true
+                },
+
+                new ApplicationUser
+                {
+                    Id = cliente2UserId,
+                    UserName = "mariana.sanchez@gmail.com",
+                    NormalizedUserName = "MARIANA.SANCHEZ@GMAIL.COM",
+                    Email = "mariana.sanchez@gmail.com",
+                    NormalizedEmail = "MARIANA.SANCHEZ@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = hasher.HashPassword(null, "Cliente123!"),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString(),
+                    Nombre = "Mariana",
+                    ApellidoPaterno = "Sánchez",
+                    ApellidoMaterno = "Lozano",
+                    FechaNacimiento = DateTime.Today.AddYears(-25),
+                    Genero = Genero.Mujer,
+                    PaisId = 1,
+                    PhoneNumber = "+5215512345673",
+                    PhoneNumberConfirmed = true
+                },
+
+                new ApplicationUser
+                {
+                    Id = cliente3UserId,
+                    UserName = "jorge.ramirez@gmail.com",
+                    NormalizedUserName = "JORGE.RAMIREZ@GMAIL.COM",
+                    Email = "jorge.ramirez@gmail.com",
+                    NormalizedEmail = "JORGE.RAMIREZ@GMAIL.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = hasher.HashPassword(null, "Cliente123!"),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString(),
+                    Nombre = "Jorge",
+                    ApellidoPaterno = "Ramírez",
+                    ApellidoMaterno = "Morales",
+                    FechaNacimiento = DateTime.Today.AddYears(-35),
+                    Genero = Genero.Hombre,
+                    PaisId = 1,
+                    PhoneNumber = "+5215512345674",
+                    PhoneNumberConfirmed = true
                 }
             );
 
@@ -185,6 +229,16 @@ namespace ExperisSeguros.Data
                 {
                     RoleId = clienteRoleId,
                     UserId = clienteUserId
+                },
+                new IdentityUserRole<string>
+                {
+                    RoleId = clienteRoleId,
+                    UserId = cliente2UserId
+                },
+                new IdentityUserRole<string>
+                {
+                    RoleId = clienteRoleId,
+                    UserId = cliente3UserId
                 }
             );
 
